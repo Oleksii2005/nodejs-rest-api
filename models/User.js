@@ -25,13 +25,14 @@ const userSchema = new Schema(
   },
   { versionKey: false, timestamps: true }
 );
+
 userSchema.post("save", handleServerError);
 userSchema.pre("findOneAndUpdate", runValidatorsAtUpdate);
 userSchema.post("findOneAndUpdate", handleServerError);
 
 export const userRegisterSchema = Joi.object({
-  password: Joi.string().required(),
   email: Joi.string().pattern(emailRegexp).required(),
+  password: Joi.string().required(),
 });
 
 export const userLoginSchema = Joi.object({
