@@ -1,13 +1,13 @@
 import express from "express";
 import cors from "cors";
 import logger from "morgan";
-import contactsRouter from "./routes/api/contacts.js";
 import "dotenv/config";
 import {
   handleNotFound,
   handleBadRequest,
   handleInternalServerError,
 } from "./middlewares/errorHandler.js";
+import contactsRouter from "./routes/api/contacts.js";
 import authRouter from "./routes/api/auth-router.js";
 
 const app = express();
