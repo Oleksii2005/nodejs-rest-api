@@ -1,16 +1,21 @@
-import { populate } from "dotenv";
 import ctrlWrapper from "../decorators/ctrlWrapper.js";
 import HttpError from "../helpers/HttpError.js";
 import Contact from "../models/Contact.js";
 
 const getAllContacts = async (req, res) => {
   const { _id: owner } = req.user;
-  const { page = 1, limit = 10 } = req.query;
+  const { page = 1, limit = 20, favorite } = req.query;
   const skip = (page - 1) * limit;
+
   const result = await Contact.find(
-    { owner },
-    { skip, limit }.populate("owner", "email name")
-  );
+    favorite ? { owner, favorite } : { owner },
+    "-createdAt -updatedAt",
+    {
+      skip,
+      limit: Number(limit),
+    }
+  ).populate("owner", "email subscription");
+
   res.json(result);
 };
 
