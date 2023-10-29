@@ -1,3 +1,4 @@
+import { fstat } from "fs";
 import ctrlWrapper from "../decorators/ctrlWrapper.js";
 import HttpError from "../helpers/HttpError.js";
 import Contact from "../models/Contact.js";
@@ -32,6 +33,7 @@ const getContactById = async (req, res) => {
 const addContactController = async (req, res) => {
   const { body } = req;
   const { _id: owner } = req.user;
+
   const result = await Contact.create({ ...body, owner });
   res.status(201).json(result);
   console.log(req.user);

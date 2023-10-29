@@ -10,6 +10,12 @@ const register = async (req, res) => {
   const { email, password, subscription } = req.body;
 
   const user = await User.findOne({ email });
+  const timestamp = Date.now();
+  const url = gravatar.url(`${email}?t=${timestamp}`, {
+    s: "200",
+    r: "pg",
+    d: "404",
+  });
 
   if (user) {
     return res.status(409).json({
@@ -23,6 +29,7 @@ const register = async (req, res) => {
     ...req.body,
     password: hashPassword,
     subscription,
+    avatarURL: url,
   });
 
   res.status(201).json({
@@ -100,10 +107,25 @@ const updateSubscription = async (req, res) => {
 
   res.json({ result });
 };
+const updateAvatarUser = async (req, res) => {
+  const { _id } = req.user;
+  const { path: tmpPath, filename } = req.file;
+  const newPath = path.join(avatarsPath, filename);
+  const file = await Jimp.read(tmpPath);
+  await file.resize(250, 250).write(newPath);
+  await fs.unlink(tmpPath);
+  const avatarURL = path.join("avatars", filename);
+  const user = await User.findByIdAndUpdate(_id, { avatarURL });
+  if (!user) throw HttpError(404, "Not found");
+  res.status(200).json({
+    avatarURL,
+  });
+};
 export default {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
   logout: ctrlWrapper(logout),
   getCurrent: ctrlWrapper(getCurrent),
   updateSubscription: ctrlWrapper(updateSubscription),
+  updateAvatarUser: ctrlWrapper(updateAvatarUser),
 };

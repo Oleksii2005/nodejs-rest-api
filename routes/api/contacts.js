@@ -1,6 +1,6 @@
 import express from "express";
 import contactController from "../../controllers/contactController.js";
-import { isEmptyBody, authenticate } from "../../middlewares/index.js";
+import { upload, isEmptyBody, authenticate } from "../../middlewares/index.js";
 import { validateBody } from "../../decorators/index.js";
 import {
   contactsAddSchema,
@@ -20,6 +20,7 @@ contactsRouter.get("/:id", isValidId, contactController.getContactById);
 
 contactsRouter.post(
   "/",
+  upload.single("avatars"),
   isEmptyBody,
   contactAddValidate,
   contactController.addContact
