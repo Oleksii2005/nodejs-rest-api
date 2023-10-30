@@ -1,11 +1,15 @@
 import User from "../models/User.js";
-import ctrlWrapper from "../decorators/ctrlWrapper.js";
+import { ctrlWrapper } from "../decorators/index.js";
 import HttpError from "../helpers/HttpError.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import path from "path";
+import gravatar from "gravatar";
+import fs from "fs/promises";
+import Jimp from "jimp";
 
 const { JWT_SECRET } = process.env;
-
+const avatarsPath = path.resolve("public", "avatars");
 const register = async (req, res) => {
   const { email, password, subscription } = req.body;
 
