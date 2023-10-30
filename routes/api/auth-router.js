@@ -1,25 +1,43 @@
 import express from "express";
 import authController from "../../controllers/auth-controller.js";
-import { authenticate, isEmptyBody } from "../../middlewares/index.js";
+import { authenticate, isEmptyBody, upload } from "../../middlewares/index.js";
 import validateBody from "../../decorators/validateBody.js";
-import { userSignUpSchema, userSignInSchema } from "../../models/User.js";
+import {
+  userRegisterSchema,
+  userLoginSchema,
+  updateSubscriptionSchema,
+} from "../../models/User.js";
 
-const userSignUpValidate = validateBody(userSignUpSchema);
-const userSignInValidate = validateBody(userSignInSchema);
+const userSignUpValidate = validateBody(userRegisterSchema);
+const userSignInValidate = validateBody(userLoginSchema);
+const userUpdateValidate = validateBody(updateSubscriptionSchema);
 const authRouter = express.Router();
 
 authRouter.post(
-  "/signup",
+  "/register",
+  upload.single("avatar"),
   isEmptyBody,
   userSignUpValidate,
-  authController.signUp
+  authController.register
 );
 authRouter.post(
-  "/signin",
+  "/login",
   isEmptyBody,
   userSignInValidate,
-  authController.signIn
+  authController.login
 );
 authRouter.get("/current", authenticate, authController.getCurrent);
-authRouter.post("/logout", authenticate, authController.logOut);
+authRouter.post("/logout", authenticate, authController.logout);
+authRouter.patch(
+  "/",
+  authenticate,
+  userUpdateValidate,
+  authController.updateSubscription
+);
+authRouter.patch(
+  "/avatars",
+  authenticate,
+  upload.single("avatar"),
+  authController.updateAvatarUser
+);
 export default authRouter;
