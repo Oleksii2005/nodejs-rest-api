@@ -6,11 +6,13 @@ import {
   userRegisterSchema,
   userLoginSchema,
   updateSubscriptionSchema,
+  userEmailSchema,
 } from "../../models/User.js";
 
 const userSignUpValidate = validateBody(userRegisterSchema);
 const userSignInValidate = validateBody(userLoginSchema);
 const userUpdateValidate = validateBody(updateSubscriptionSchema);
+const userEmailValidate = validateBody(userEmailSchema);
 const authRouter = express.Router();
 
 authRouter.post(
@@ -20,6 +22,9 @@ authRouter.post(
   userSignUpValidate,
   authController.register
 );
+authRouter.get("/verify/:verificationToken", authController.verify);
+authRouter.post("/verify", userEmailValidate, authController.resendVerifyEmail);
+
 authRouter.post(
   "/login",
   isEmptyBody,
